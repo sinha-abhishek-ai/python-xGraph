@@ -19,5 +19,4 @@ g = Graph(directed=True)
 g.add_vertex("A")
 g.add_edge("A", "B")
 print(g.dfs("A"))
-
 ```
