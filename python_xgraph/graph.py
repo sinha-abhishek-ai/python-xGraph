@@ -54,10 +54,50 @@ Methods:
         Displays the adjacency list of the graph.
 """
 class Graph:
-    def __init__(self, directed: bool = False):
+    def __init__(self, graph: dict = None, directed: bool = False):
         """Initializes a new graph instance."""
-        self.graph: Dict[Any, List[Any]] = {}
         self.directed = directed
+        self.graph = {}
+        self._init_graph(graph)
+        self._validate_graph(graph, directed)
+        # self.graph = graph
+        
+
+    def _init_graph(self, g: dict):
+        value_items = []
+        for key in g.keys():
+            value_items.append(key)
+            
+        for value in g.values():
+            value_items.extend(value)
+        
+        value_items = list(set(value_items))
+        
+        for x in value_items:
+            self.add_vertex(x)
+
+        for key in g.keys():
+            for item in g[key]:
+                self.add_edge(key, item)
+    
+    def _validate_graph(self, graph: dict, directed: bool):
+        """Validates that the input graph is correctly structured."""
+        if not isinstance(graph, dict):
+            raise ValueError("The graph must be a dictionary.")
+
+        for vertex, neighbors in graph.items():
+            if not isinstance(neighbors, list):
+                raise ValueError(f"The adjacency list for vertex '{vertex}' must be a list.")
+            
+            for neighbor in neighbors:
+                # Ensure the neighbor is a valid vertex type
+                if not isinstance(neighbor, (str, int, float, tuple)):
+                    raise ValueError(f"Invalid vertex type: '{neighbor}' in adjacency list of '{vertex}'.")
+
+                # If the graph is undirected, ensure symmetry
+                if not directed and neighbor in graph and vertex not in graph[neighbor]:
+                    raise ValueError(f"Edge ({vertex}, {neighbor}) is not bidirectional in an undirected graph.")
+
 
     def add_vertex(self, vertex: Any) -> None:
         """Adds a new vertex to the graph."""

@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="python-xgraph",
-    version="0.1.0",
+    version="1.0.0",
     author="Abhishek Sinha",
     author_email="sinha.abhishek.ai@gmail.com",
     description="A simple graph library with DFS, BFS, and cycle detection.",
