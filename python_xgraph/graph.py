@@ -58,12 +58,16 @@ class Graph:
         """Initializes a new graph instance."""
         self.directed = directed
         self.graph = {}
-        self._init_graph(graph)
-        self._validate_graph(graph, directed)
+        if graph is not None:
+            self._init_graph(graph)
+            self._validate_graph()
         # self.graph = graph
         
 
     def _init_graph(self, g: dict):
+        if not isinstance(g, dict):
+            raise ValueError("The graph must be a dictionary.")
+
         value_items = []
         for key in g.keys():
             value_items.append(key)
@@ -80,24 +84,23 @@ class Graph:
             for item in g[key]:
                 self.add_edge(key, item)
     
-    def _validate_graph(self, graph: dict, directed: bool):
+    def _validate_graph(self):
         """Validates that the input graph is correctly structured."""
-        if not isinstance(graph, dict):
+        if not isinstance(self.graph, dict):
             raise ValueError("The graph must be a dictionary.")
+        try:
+            for vertex, neighbors in self.graph.items():
+                
+                for neighbor in neighbors:
+                    # Ensure the neighbor is a valid vertex type
+                    if not isinstance(neighbor, (str, int, float, tuple)):
+                        raise ValueError(f"Invalid vertex type: '{neighbor}' in adjacency list of '{vertex}'.")
 
-        for vertex, neighbors in graph.items():
-            if not isinstance(neighbors, list):
-                raise ValueError(f"The adjacency list for vertex '{vertex}' must be a list.")
-            
-            for neighbor in neighbors:
-                # Ensure the neighbor is a valid vertex type
-                if not isinstance(neighbor, (str, int, float, tuple)):
-                    raise ValueError(f"Invalid vertex type: '{neighbor}' in adjacency list of '{vertex}'.")
-
-                # If the graph is undirected, ensure symmetry
-                if not directed and neighbor in graph and vertex not in graph[neighbor]:
-                    raise ValueError(f"Edge ({vertex}, {neighbor}) is not bidirectional in an undirected graph.")
-
+                    # If the graph is undirected, ensure symmetry
+                    if not self.directed and neighbor in self.graph and vertex not in self.graph[neighbor]:
+                        raise ValueError(f"Edge ({vertex}, {neighbor}) is not bidirectional in an undirected graph.")
+        except Exception:
+            raise ValueError(f"Edge ({vertex}, {neighbor}) is not properly defined for the graph.")
 
     def add_vertex(self, vertex: Any) -> None:
         """Adds a new vertex to the graph."""
@@ -275,5 +278,8 @@ class Graph:
 
     def display(self) -> None:
         """Displays the adjacency list of the graph."""
-        for vertex, neighbors in self.graph.items():
-            print(f"{vertex}: {neighbors}")
+        for vertex in self.topological_sort():
+            neighbors = self.graph[vertex]
+            if len(neighbors) > 0 :
+                print(f"{vertex}: {neighbors}")
+                
