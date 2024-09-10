@@ -55,14 +55,12 @@ Methods:
 """
 class Graph:
     def __init__(self, graph: dict = None, directed: bool = False):
-        """Initializes a new graph instance."""
+        print(f"Initializing Graph with graph={graph}, directed={directed}")
         self.directed = directed
         self.graph = {}
         if graph is not None:
             self._init_graph(graph)
             self._validate_graph()
-        # self.graph = graph
-        
 
     def _init_graph(self, g: dict):
         if not isinstance(g, dict):
@@ -282,4 +280,3 @@ class Graph:
             neighbors = self.graph[vertex]
             if len(neighbors) > 0 :
                 print(f"{vertex}: {neighbors}")
-                

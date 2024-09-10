@@ -1,5 +1,8 @@
+import sys
+import os
+
+from python_xgraph.graph import Graph
 import unittest
-from python_xgraph import Graph
 
 class TestGraph(unittest.TestCase):
 
@@ -59,6 +62,51 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(result, ["A", "B", "C"])
         self.graph.add_edge("C", "A")
         self.assertRaises(ValueError, self.graph.topological_sort)
+
+    def test_init_with_dict(self):
+        """Test initializing a graph with a dictionary."""
+        graph_dict = {"A": ["B", "C"], "B": ["C"], "C": []}
+        graph = Graph(graph=graph_dict, directed=True)
+        self.assertTrue(graph.has_vertex("A"))
+        self.assertTrue(graph.has_vertex("B"))
+        self.assertTrue(graph.has_vertex("C"))
+        self.assertTrue(graph.has_edge("A", "B"))
+        self.assertTrue(graph.has_edge("A", "C"))
+        self.assertTrue(graph.has_edge("B", "C"))
+
+    def test_get_vertices(self):
+        """Test getting all vertices."""
+        vertices = self.graph.get_vertices()
+        self.assertEqual(set(vertices), {"A", "B", "C"})
+
+    def test_get_edges(self):
+        """Test getting all edges."""
+        edges = self.graph.get_edges()
+        self.assertEqual(set(edges), {("A", "B"), ("B", "C")})
+
+    def test_undirected_graph(self):
+        """Test undirected graph behavior."""
+        undirected_graph = Graph(directed=False)
+        undirected_graph.add_edge("X", "Y")
+        self.assertTrue(undirected_graph.has_edge("X", "Y"))
+        self.assertTrue(undirected_graph.has_edge("Y", "X"))
+
+    def test_topological_sort_reverse(self):
+        """Test topological sort with reverse option."""
+        result = self.graph.topological_sort(reverse=True)
+        self.assertEqual(result, ["C", "B", "A"])
+
+    def test_display(self):
+        """Test display method (this is more of a smoke test)."""
+        # Redirect stdout to capture print output
+        from io import StringIO
+        import sys
+        captured_output = StringIO()
+        sys.stdout = captured_output
+        self.graph.display()
+        sys.stdout = sys.__stdout__
+        self.assertIn("A: ['B']", captured_output.getvalue())
+        self.assertIn("B: ['C']", captured_output.getvalue())
 
 if __name__ == "__main__":
     unittest.main()
